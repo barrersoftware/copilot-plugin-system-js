@@ -41,7 +41,7 @@ export class PluginManager {
    * Handle /plugins slash commands
    * Returns response message or null if not a plugin command
    */
-  handleCommand(prompt: string): string | null {
+  async handleCommand(prompt: string): Promise<string | null> {
     const trimmed = prompt.trim();
     
     if (!trimmed.startsWith('/plugins')) {
@@ -63,7 +63,7 @@ export class PluginManager {
         case 'install':
           const installName = parts[2];
           if (!installName) return '❌ Usage: /plugins install <name>';
-          return this.installPlugin(installName);
+          return await this.installPlugin(installName);
         
         case 'enable':
           const enableName = parts[2];
@@ -132,27 +132,76 @@ export class PluginManager {
   }
 
   /**
-   * Install a plugin
+   * Install a plugin at runtime
+   * Can install from local registry or remote GitHub registry
    */
-  private installPlugin(name: string): string {
+  private async installPlugin(name: string): Promise<string> {
     if (this.installedPlugins.has(name)) {
       return `⚠️  Plugin "${name}" is already installed`;
     }
 
+    // Check local registry first
     const factory = this.availablePlugins.get(name);
-    if (!factory) {
-      return `❌ Plugin "${name}" not found in registry\n\nType /plugins available to see available plugins`;
+    if (factory) {
+      const plugin = await factory();
+      this.installedPlugins.set(name, plugin);
+      this.enabledPlugins.add(name);
+
+      if (this.debug) {
+        console.log(`[PluginManager] Installed plugin: ${name}`);
+      }
+
+      return `✅ Installed and enabled plugin: ${name}`;
     }
 
-    const plugin = factory();
-    this.installedPlugins.set(name, plugin);
-    this.enabledPlugins.add(name);
+    // Try to fetch from GitHub registry
+    try {
+      console.log(`📦 Fetching "${name}" from GitHub registry...`);
+      const plugin = await this.fetchPluginFromRegistry(name);
+      this.installedPlugins.set(name, plugin);
+      this.enabledPlugins.add(name);
+      await plugin.onLoad?.();
+      return `✅ Plugin "${name}" installed from registry and enabled`;
+    } catch (error) {
+      return `❌ Plugin "${name}" not found\n\nAvailable: ${Array.from(this.availablePlugins.keys()).join(', ')}\nError: ${error instanceof Error ? error.message : String(error)}`;
+    }
+  }
 
-    if (this.debug) {
-      console.log(`[PluginManager] Installed plugin: ${name}`);
+  /**
+   * Fetch plugin from GitHub registry
+   */
+  private async fetchPluginFromRegistry(name: string): Promise<any> {
+    const registryUrl = 'https://raw.githubusercontent.com/barrersoftware/copilot-plugins-registry/master/plugins';
+    const pluginUrl = `${registryUrl}/${name}/plugin.js`;
+
+    // Fetch plugin code
+    const response = await fetch(pluginUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    return `✅ Installed and enabled plugin: ${name}`;
+    const code = await response.text();
+
+    // Create a temporary file to load the plugin
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const os = await import('os');
+
+    const pluginDir = path.join(os.homedir(), '.copilot-plugins', name);
+    await fs.mkdir(pluginDir, { recursive: true });
+    
+    const pluginPath = path.join(pluginDir, 'plugin.js');
+    await fs.writeFile(pluginPath, code, 'utf-8');
+
+    // Dynamic import
+    const pluginModule = await import(`file://${pluginPath}`);
+    const PluginClass = pluginModule.default || pluginModule[Object.keys(pluginModule)[0]];
+
+    if (!PluginClass) {
+      throw new Error('Plugin does not export a default class');
+    }
+
+    return new PluginClass();
   }
 
   /**

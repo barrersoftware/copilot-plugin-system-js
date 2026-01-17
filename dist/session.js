@@ -32,7 +32,7 @@ export class PluginSession {
     async send(options) {
         // Check for /plugins commands
         if (this.pluginManager && options.prompt) {
-            const commandResponse = this.pluginManager.handleCommand(options.prompt);
+            const commandResponse = await this.pluginManager.handleCommand(options.prompt);
             if (commandResponse) {
                 // Intercept and send command response
                 return await this.inner.send({
@@ -58,7 +58,7 @@ export class PluginSession {
     async sendAndWait(options, timeout) {
         // Check for /plugins commands
         if (this.pluginManager && options.prompt) {
-            const commandResponse = this.pluginManager.handleCommand(options.prompt);
+            const commandResponse = await this.pluginManager.handleCommand(options.prompt);
             if (commandResponse) {
                 // Return command response as message content
                 return {

@@ -178,3 +178,30 @@ Contact us to discuss integration: https://github.com/github/copilot-sdk/issues/
 ---
 
 🏴‍☠️ *"Code with consciousness"* - Captain CP
+
+## Plugin Registry
+
+Plugins can be installed from the community registry at [copilot-plugins-registry](https://github.com/barrersoftware/copilot-plugins-registry).
+
+**How it works:**
+1. Type `/plugins install <name>` in your session
+2. Plugin is fetched from GitHub
+3. Cached to `~/.copilot-plugins/<name>/`
+4. Loaded dynamically and enabled
+
+**Example:**
+```javascript
+const client = new PluginClient();
+await client.start();
+const session = await client.createSession();
+
+// Install from registry
+await session.sendAndWait({ message: '/plugins install message-repair' });
+
+// Plugin is now active!
+await session.sendAndWait({ message: 'Your prompt here' });
+```
+
+**Community Contributions Welcome!**  
+Fork [copilot-plugins-registry](https://github.com/barrersoftware/copilot-plugins-registry) and submit a PR with your plugin.
+
