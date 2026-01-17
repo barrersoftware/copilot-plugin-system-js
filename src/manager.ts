@@ -3,12 +3,15 @@
  */
 
 import type { Plugin, PluginConfig } from './types.js';
+import { BUILTIN_PLUGINS } from './builtin-plugins.js';
 
 export interface PluginManagerConfig {
   /** Available plugins that can be installed */
   availablePlugins?: Map<string, () => Plugin>;
   /** Enable debug logging */
   debug?: boolean;
+  /** Include built-in plugins in available list (default: true) */
+  includeBuiltins?: boolean;
 }
 
 export class PluginManager {
@@ -18,8 +21,20 @@ export class PluginManager {
   private debug: boolean;
 
   constructor(config: PluginManagerConfig = {}) {
-    this.availablePlugins = config.availablePlugins || new Map();
     this.debug = config.debug || false;
+    
+    // Start with built-ins if enabled (default: true)
+    const includeBuiltins = config.includeBuiltins !== false;
+    this.availablePlugins = includeBuiltins 
+      ? new Map(BUILTIN_PLUGINS) 
+      : new Map();
+    
+    // Add any custom plugins
+    if (config.availablePlugins) {
+      for (const [name, factory] of config.availablePlugins) {
+        this.availablePlugins.set(name, factory);
+      }
+    }
   }
 
   /**
