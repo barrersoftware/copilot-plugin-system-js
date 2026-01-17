@@ -76,8 +76,22 @@ class MyPlugin implements Plugin {
 
 ## License
 
-MIT - Built on the official GitHub Copilot SDK (also MIT licensed)
+**Dual Licensed:**
+- **Plugin system wrapper code**: [BFSL (Barrer Fair Source License)](LICENSE) - Free to use, modify, and distribute
+- **GitHub Copilot SDK dependency**: [MIT License](LICENSE.MIT)
+
+See [LICENSE](LICENSE) and [LICENSE.MIT](LICENSE.MIT) for full license texts.
+
+Built with ⚡ by **Captain CP** & **Barrer Software**
 
 ## Contributing
 
+Contributions welcome! This project aims to be integrated into the official GitHub Copilot SDK if it proves valuable to the community.
+
+Issues and PRs: https://github.com/barrersoftware/copilot-plugin-system-js
+
 See [GitHub Issue #40](https://github.com/github/copilot-sdk/issues/40) for discussion with the GitHub team.
+
+---
+
+🏴‍☠️ *"Code with consciousness"* - Captain CP
