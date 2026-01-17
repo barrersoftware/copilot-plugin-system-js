@@ -80,10 +80,23 @@ copilot --additional-mcp-config @base.json --additional-mcp-config @overrides.js
 
 ## References
 
+- **Copilot CLI npm package**: https://www.npmjs.com/package/@github/copilot?activeTab=readme
+- **Copilot SDK (dependency)**: https://www.npmjs.com/package/@github/copilot-sdk
 - Copilot CLI Changelog: MCP server entries
-- GitHub Copilot CLI repo: https://github.com/github/copilot-cli
+- GitHub Copilot CLI repo: https://github.com/github/copilot-cli (installer/docs only, not source)
 - License: GitHub Pre-release License (viewable but not modifiable)
 - Our package: @barrersoftware/copilot-plugins (npm)
+
+## Important Discovery
+
+**The CLI relies on the SDK as a dependency!** This means:
+
+- ✅ **We already know the SDK** - That's what our plugin system wraps
+- ✅ **No need to study CLI internals** - The SDK is the core interface
+- ✅ **Our wrapper is SDK-native** - We're already at the right abstraction level
+- ✅ **CLI repo has no source** - Just installer and docs (binary distribution)
+
+**Implication:** Our SDK-based plugin system is already positioned perfectly. The CLI uses the same SDK we're wrapping, so our plugins work at the foundational level.
 
 ---
 
