@@ -1,6 +1,6 @@
 {
   "name": "@barrersoftware/copilot-plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Plugin system for GitHub Copilot CLI SDK",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
