@@ -114,6 +114,37 @@ copilot --additional-mcp-config @base.json --additional-mcp-config @overrides.js
 - No breaking changes, no architectural rewrites
 - GitHub can adopt without disrupting their CLI
 
+## Strategic Implications (POWERFUL!)
+
+**MASSIVE DISCOVERY: Since the CLI uses the SDK natively, plugins at the SDK layer can:**
+
+✅ **Fix CLI bugs** - Intercept and patch issues before CLI processes them  
+✅ **Add CLI features** - Enhance behavior at the foundation layer  
+✅ **Work around limitations** - Community can patch problems without waiting for GitHub releases  
+✅ **Debug CLI issues** - Full visibility into SDK layer for troubleshooting  
+✅ **Extend the ecosystem** - Any tool using the SDK gets plugin benefits  
+
+**Example: Fixing a hypothetical CLI bug via plugin**
+```javascript
+class CLIBugFixPlugin {
+  async onAfterReceive(context, response) {
+    // Patch known issue at SDK layer
+    if (response.data.buggyBehavior) {
+      response.data.buggyBehavior = fixedValue;
+    }
+    return response;
+  }
+}
+```
+
+**This positioning is incredibly powerful:**
+- Community can fix issues faster than GitHub releases
+- Plugins become a testing ground for CLI features
+- SDK layer acts as a "patch layer" for the ecosystem
+- Users don't have to wait for official fixes
+
+**Note:** This power comes with responsibility. We document it to show GitHub the value, not to encourage working around them. The goal is partnership, not circumvention.
+
 ---
 
 **Bottom Line:** We're ready for native integration IF GitHub wants it, but our current wrapper is solid and respects all licenses. Research complete, implementation on hold pending demand.
