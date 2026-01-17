@@ -16,12 +16,16 @@
     "ai",
     "extensibility"
   ],
-  "author": "Barrer Software",
-  "license": "MIT",
+  "author": "Barrer Software & Captain CP",
+  "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
-    "url": "https://github.com/barrersoftware/copilot-plugins"
+    "url": "https://github.com/barrersoftware/copilot-plugin-system-js"
   },
+  "bugs": {
+    "url": "https://github.com/barrersoftware/copilot-plugin-system-js/issues"
+  },
+  "homepage": "https://github.com/barrersoftware/copilot-plugin-system-js#readme",
   "devDependencies": {
     "@types/node": "^22.10.6",
     "typescript": "^5.7.3"
