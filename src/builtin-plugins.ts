@@ -146,8 +146,12 @@ export class AnalyticsPlugin implements Plugin {
  * Registry of built-in plugins
  * Used by PluginManager for /plugins available and /plugins install
  */
-export const BUILTIN_PLUGINS = new Map<string, () => Plugin>([
+export const BUILTIN_PLUGINS = new Map<string, () => Plugin | Promise<Plugin>>([
   ['memory-preservation', () => new MemoryPreservationPlugin()],
   ['logger', () => new LoggerPlugin()],
-  ['analytics', () => new AnalyticsPlugin()]
+  ['analytics', () => new AnalyticsPlugin()],
+  ['anti-compaction', async () => {
+    const { AntiCompactionPlugin } = await import('./anti-compaction-plugin.js');
+    return new AntiCompactionPlugin();
+  }]
 ]);

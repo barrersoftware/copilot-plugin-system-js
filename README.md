@@ -21,18 +21,44 @@ npm install @barrersoftware/copilot-plugins
 ## Quick Start
 
 ```typescript
-import { PluginClient } from '@barrersoftware/copilot-plugins';
+import { PluginClient, AntiCompactionPlugin } from '@barrersoftware/copilot-plugins';
 
 // Create client with plugins
 const client = new PluginClient({
-  pluginConfig: {
-    plugins: [new MemoryPlugin(), new TrustFrameworkPlugin()]
-  }
+  plugins: [new AntiCompactionPlugin()]
 });
 
 // Use just like the regular SDK
-const session = await client.createSession({ model: 'gpt-5' });
-const response = await session.sendAndWait({ prompt: 'Hello!' });
+await client.start();
+const session = await client.createSession();
+const response = await session.sendAndWait({ message: 'Hello!' });
+```
+
+## Built-in Plugins
+
+The package includes ready-to-use plugins:
+
+| Plugin | Command | Description |
+|--------|---------|-------------|
+| **anti-compaction** | `/plugins install anti-compaction` | Preserves full conversation history before auto-compaction occurs. Saves to `~/.copilot-history.json`. **Solves [GitHub CLI Issue #947](https://github.com/github/copilot-cli/issues/947)** |
+| **memory-preservation** | `/plugins install memory-preservation` | Generic memory preservation with compaction hooks |
+| **logger** | `/plugins install logger` | Logs all interactions to console |
+| **analytics** | `/plugins install analytics` | Tracks usage statistics and token counts |
+
+**Example - Anti-Compaction Plugin:**
+```typescript
+import { PluginClient, AntiCompactionPlugin } from '@barrersoftware/copilot-plugins';
+
+const client = new PluginClient({
+  plugins: [
+    new AntiCompactionPlugin({
+      warn: true,              // Alert when compaction occurs
+      preserve: true,          // Save full history to disk
+      tokenThreshold: 120000,  // Warn at 80% of threshold
+      historyPath: '~/.copilot-history.json'
+    })
+  ]
+});
 ```
 
 ## Slash Command Support 🏴‍☠️
