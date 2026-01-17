@@ -1,0 +1,9 @@
+# Published to both npm registries:
+# 1. npmjs.org (default)
+# 2. GitHub Packages (backup)
+
+# To install from GitHub Packages, use:
+# npm install @barrersoftware/copilot-plugins --registry=https://npm.pkg.github.com
+
+# Or configure npm to use GitHub Packages for @barrersoftware scope:
+# @barrersoftware:registry=https://npm.pkg.github.com
