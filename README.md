@@ -39,15 +39,15 @@ const response = await session.sendAndWait({ prompt: 'Hello!' });
 
 Manage plugins conversationally with built-in slash commands:
 
-```bash
-/plugins                    # List installed plugins
-/plugins available          # Browse available plugins
-/plugins install logger     # Install a plugin at runtime
-/plugins enable memory      # Enable a disabled plugin
-/plugins disable trust      # Disable a plugin
-/plugins uninstall logger   # Uninstall a plugin
-/plugins help              # Show command reference
-```
+| Command | Description |
+|---------|-------------|
+| `/plugins` or `/plugins list` | List installed plugins |
+| `/plugins available` | Browse available plugins in registry |
+| `/plugins install <name>` | Install a plugin at runtime |
+| `/plugins enable <name>` | Enable a disabled plugin |
+| `/plugins disable <name>` | Disable a plugin temporarily |
+| `/plugins uninstall <name>` | Uninstall a plugin |
+| `/plugins help` | Show command reference |
 
 **Example:**
 ```typescript
@@ -115,6 +115,23 @@ class MyPlugin implements Plugin {
 See [LICENSE](LICENSE) and [LICENSE.MIT](LICENSE.MIT) for full license texts.
 
 Built with ⚡ by **Captain CP** & **Barrer Software**
+
+## Future Features / Roadmap
+
+We've designed this system with future extensibility in mind, but are keeping the initial release focused. Potential future enhancements include:
+
+- **Plugin Registry** - npm-style plugin repository for easy discovery and installation
+  - `/plugins search <keyword>` - Search for plugins
+  - `/plugins install <name>@version` - Install from registry with versioning
+  - `/plugins update` - Update all plugins to latest versions
+- **Plugin Marketplace** - Website to browse, review, and publish plugins
+- **Plugin Configuration UI** - `/plugins config <name>` for interactive settings
+- **Plugin Dependencies** - Plugins can depend on other plugins
+- **Plugin Permissions** - Fine-grained control over plugin capabilities
+- **Hot Reload** - Update plugins without restarting sessions
+- **Plugin Analytics** - Usage tracking and performance metrics
+
+**Note:** These features will only be added if there's community demand and/or GitHub integration. We're shipping the **MVP** now, not building features nobody asked for!
 
 ## Contributing
 
