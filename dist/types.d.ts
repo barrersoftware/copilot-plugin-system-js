@@ -26,6 +26,27 @@ export interface Plugin {
     onBeforeSend?(context: PluginContext, options: MessageOptions): Promise<MessageOptions> | MessageOptions;
     /** Called after a response is received */
     onAfterReceive?(context: PluginContext, response: any): Promise<any> | any;
+    /**
+     * (Optional) Called when context compaction starts
+     * Opt-in hook for plugins that need to preserve data before compression
+     */
+    onCompactionStart?(context: PluginContext, data: {
+        preCompactionTokens?: number;
+        preCompactionMessagesLength?: number;
+    }): Promise<void> | void;
+    /**
+     * (Optional) Called when context compaction completes
+     * Opt-in hook for plugins that track what was compressed
+     */
+    onCompactionComplete?(context: PluginContext, data: {
+        success: boolean;
+        error?: string;
+        preCompactionTokens?: number;
+        postCompactionTokens?: number;
+        messagesRemoved?: number;
+        tokensRemoved?: number;
+        summaryContent?: string;
+    }): Promise<void> | void;
     /** Called when session ends */
     onSessionEnd?(context: PluginContext): Promise<void> | void;
     /** Called when plugin is unloaded */

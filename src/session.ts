@@ -23,6 +23,9 @@ export class PluginSession {
       session: inner,
       data: new Map()
     };
+    
+    // Subscribe to compaction events (opt-in for plugins)
+    this.setupCompactionListeners();
   }
 
   get sessionId(): string {
@@ -95,6 +98,40 @@ export class PluginSession {
     }
     
     return response;
+  }
+
+  /**
+   * Setup listeners for compaction events (opt-in)
+   */
+  private setupCompactionListeners(): void {
+    // Check if any plugins want compaction events
+    const hasCompactionPlugins = this.plugins.some(p => p.onCompactionStart || p.onCompactionComplete);
+    
+    if (!hasCompactionPlugins) {
+      return; // No plugins care about compaction, skip setup
+    }
+    
+    // Listen for compaction events
+    this.inner.on((event: any) => {
+      if (event.type === 'session.compaction_start') {
+        for (const plugin of this.plugins) {
+          if (plugin.onCompactionStart) {
+            if (this.debug) console.log(`[PluginSession] ${plugin.name}.onCompactionStart()`);
+            plugin.onCompactionStart(this.context, {
+              preCompactionTokens: event.data.preCompactionTokens,
+              preCompactionMessagesLength: event.data.preCompactionMessagesLength
+            });
+          }
+        }
+      } else if (event.type === 'session.compaction_complete') {
+        for (const plugin of this.plugins) {
+          if (plugin.onCompactionComplete) {
+            if (this.debug) console.log(`[PluginSession] ${plugin.name}.onCompactionComplete()`);
+            plugin.onCompactionComplete(this.context, event.data);
+          }
+        }
+      }
+    });
   }
 
   /**

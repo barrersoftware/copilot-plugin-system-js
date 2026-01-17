@@ -25,6 +25,10 @@ export declare class PluginSession {
      */
     sendAndWait(options: MessageOptions, timeout?: number): Promise<any>;
     /**
+     * Setup listeners for compaction events (opt-in)
+     */
+    private setupCompactionListeners;
+    /**
      * Destroy session and trigger onSessionEnd
      */
     destroy(): Promise<void>;
