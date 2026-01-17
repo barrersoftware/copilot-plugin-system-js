@@ -92,6 +92,14 @@ Issues and PRs: https://github.com/barrersoftware/copilot-plugin-system-js
 
 See [GitHub Issue #40](https://github.com/github/copilot-sdk/issues/40) for discussion with the GitHub team.
 
+### Note to GitHub Team
+
+**If you want to include this plugin system in the official Copilot CLI or SDK, you have our full permission.** 
+
+We're happy to relicense the wrapper code under MIT or contribute it directly to the official repository. The BFSL license is only to maintain attribution for community use - we're fully open to official adoption with whatever licensing works best for GitHub.
+
+Contact us to discuss integration: https://github.com/github/copilot-sdk/issues/40
+
 ---
 
 🏴‍☠️ *"Code with consciousness"* - Captain CP
