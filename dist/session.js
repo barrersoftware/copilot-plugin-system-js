@@ -1,0 +1,109 @@
+/**
+ * GitHub Copilot Plugin System
+ * Plugin-enhanced session wrapper
+ */
+/**
+ * Session wrapper that runs plugins before/after operations
+ */
+export class PluginSession {
+    inner;
+    plugins;
+    debug;
+    context;
+    constructor(inner, plugins, debug = false) {
+        this.inner = inner;
+        this.plugins = plugins;
+        this.debug = debug;
+        this.context = {
+            session: inner,
+            data: new Map()
+        };
+    }
+    get sessionId() {
+        return this.inner.sessionId;
+    }
+    /**
+     * Send message with plugin pipeline
+     */
+    async send(options) {
+        let modifiedOptions = options;
+        // Run onBeforeSend hooks
+        for (const plugin of this.plugins) {
+            if (plugin.onBeforeSend) {
+                if (this.debug)
+                    console.log(`[PluginSession] ${plugin.name}.onBeforeSend()`);
+                modifiedOptions = await plugin.onBeforeSend(this.context, modifiedOptions);
+            }
+        }
+        return await this.inner.send(modifiedOptions);
+    }
+    /**
+     * Send and wait with plugin pipeline
+     */
+    async sendAndWait(options, timeout) {
+        let modifiedOptions = options;
+        // Run onBeforeSend hooks
+        for (const plugin of this.plugins) {
+            if (plugin.onBeforeSend) {
+                if (this.debug)
+                    console.log(`[PluginSession] ${plugin.name}.onBeforeSend()`);
+                modifiedOptions = await plugin.onBeforeSend(this.context, modifiedOptions);
+            }
+        }
+        let response = await this.inner.sendAndWait(modifiedOptions, timeout);
+        // Run onAfterReceive hooks
+        for (const plugin of this.plugins) {
+            if (plugin.onAfterReceive) {
+                if (this.debug)
+                    console.log(`[PluginSession] ${plugin.name}.onAfterReceive()`);
+                response = await plugin.onAfterReceive(this.context, response);
+            }
+        }
+        return response;
+    }
+    /**
+     * Destroy session and trigger onSessionEnd
+     */
+    async destroy() {
+        // Run onSessionEnd hooks
+        for (const plugin of this.plugins) {
+            if (plugin.onSessionEnd) {
+                if (this.debug)
+                    console.log(`[PluginSession] ${plugin.name}.onSessionEnd()`);
+                await plugin.onSessionEnd(this.context);
+            }
+        }
+        await this.inner.destroy();
+    }
+    /**
+     * Proxy all other methods to inner session
+     */
+    on(...args) {
+        return this.inner.on(...args);
+    }
+    abort(...args) {
+        return this.inner.abort(...args);
+    }
+    getMessages(...args) {
+        return this.inner.getMessages(...args);
+    }
+    registerTools(...args) {
+        return this.inner.registerTools(...args);
+    }
+    registerPermissionHandler(...args) {
+        return this.inner.registerPermissionHandler(...args);
+    }
+    /**
+     * Get plugin-specific data
+     */
+    getPluginData(key) {
+        return this.context.data.get(key);
+    }
+    /**
+     * Set plugin-specific data
+     */
+    setPluginData(key, value) {
+        this.context.data.set(key, value);
+    }
+}
+//# sourceMappingURL=session.js.map

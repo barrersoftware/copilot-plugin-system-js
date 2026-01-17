@@ -1,0 +1,32 @@
+{
+  "name": "@barrersoftware/copilot-plugins",
+  "version": "1.0.0",
+  "description": "Plugin system for GitHub Copilot CLI SDK",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "github",
+    "copilot",
+    "plugins",
+    "ai",
+    "extensibility"
+  ],
+  "author": "Barrer Software",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/barrersoftware/copilot-plugins"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.6",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@github/copilot-sdk": "^0.1.13"
+  }
+}
