@@ -25,15 +25,47 @@ import { PluginClient } from '@barrersoftware/copilot-plugins';
 
 // Create client with plugins
 const client = new PluginClient({
-  plugins: [
-    new MemoryPlugin(),
-    new TrustFrameworkPlugin()
-  ]
+  pluginConfig: {
+    plugins: [new MemoryPlugin(), new TrustFrameworkPlugin()]
+  }
 });
 
 // Use just like the regular SDK
 const session = await client.createSession({ model: 'gpt-5' });
 const response = await session.sendAndWait({ prompt: 'Hello!' });
+```
+
+## Slash Command Support 🏴‍☠️
+
+Manage plugins conversationally with built-in slash commands:
+
+```bash
+/plugins                    # List installed plugins
+/plugins available          # Browse available plugins
+/plugins install logger     # Install a plugin at runtime
+/plugins enable memory      # Enable a disabled plugin
+/plugins disable trust      # Disable a plugin
+/plugins uninstall logger   # Uninstall a plugin
+/plugins help              # Show command reference
+```
+
+**Example:**
+```typescript
+const client = new PluginClient({
+  pluginManagerConfig: {
+    availablePlugins: new Map([
+      ['logger', () => new LoggerPlugin()],
+      ['memory', () => new MemoryPlugin()]
+    ])
+  }
+});
+
+const session = await client.createSession({ model: 'gpt-5' });
+
+// Use slash commands
+await session.sendAndWait({ prompt: '/plugins available' });
+await session.sendAndWait({ prompt: '/plugins install logger' });
+await session.sendAndWait({ prompt: '/plugins list' });
 ```
 
 ## Architecture

@@ -4,17 +4,28 @@
  */
 import { CopilotClient } from '@github/copilot-sdk';
 import { PluginSession } from './session.js';
+import { PluginManager } from './manager.js';
 /**
  * Extended Copilot client with plugin support
  */
 export class PluginClient extends CopilotClient {
     plugins = [];
     debug = false;
+    pluginManager;
     constructor(options) {
         super(options);
         if (options?.pluginConfig) {
             this.plugins = options.pluginConfig.plugins || [];
             this.debug = options.pluginConfig.debug || false;
+        }
+        // Initialize plugin manager
+        this.pluginManager = new PluginManager({
+            ...options?.pluginManagerConfig,
+            debug: this.debug
+        });
+        // Pre-install any initial plugins into manager
+        for (const plugin of this.plugins) {
+            this.pluginManager.preinstallPlugin(plugin);
         }
     }
     /**
@@ -38,14 +49,16 @@ export class PluginClient extends CopilotClient {
      */
     async createSession(config) {
         const session = await super.createSession(config);
+        // Get all enabled plugins (initial + dynamically managed)
+        const enabledPlugins = this.pluginManager.getEnabledPlugins();
         // Wrap session with plugin support
-        const pluginSession = new PluginSession(session, this.plugins, this.debug);
+        const pluginSession = new PluginSession(session, enabledPlugins, this.debug, this.pluginManager);
         // Trigger onSessionCreated hooks
         const context = {
             session: pluginSession,
             data: new Map()
         };
-        for (const plugin of this.plugins) {
+        for (const plugin of enabledPlugins) {
             if (plugin.onSessionCreated) {
                 if (this.debug)
                     console.log(`[PluginClient] ${plugin.name}.onSessionCreated()`);
@@ -96,6 +109,12 @@ export class PluginClient extends CopilotClient {
      */
     getPlugins() {
         return [...this.plugins];
+    }
+    /**
+     * Get plugin manager for slash command support
+     */
+    getPluginManager() {
+        return this.pluginManager;
     }
 }
 //# sourceMappingURL=client.js.map

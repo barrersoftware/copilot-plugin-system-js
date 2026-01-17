@@ -5,6 +5,7 @@
 
 import type { CopilotSession, MessageOptions } from '@github/copilot-sdk';
 import type { Plugin, PluginContext } from './types.js';
+import type { PluginManager } from './manager.js';
 
 /**
  * Session wrapper that runs plugins before/after operations
@@ -15,7 +16,8 @@ export class PluginSession {
   constructor(
     private inner: CopilotSession,
     private plugins: Plugin[],
-    private debug: boolean = false
+    private debug: boolean = false,
+    private pluginManager?: PluginManager
   ) {
     this.context = {
       session: inner,
@@ -31,6 +33,18 @@ export class PluginSession {
    * Send message with plugin pipeline
    */
   async send(options: MessageOptions): Promise<string> {
+    // Check for /plugins commands
+    if (this.pluginManager && options.prompt) {
+      const commandResponse = this.pluginManager.handleCommand(options.prompt);
+      if (commandResponse) {
+        // Intercept and send command response
+        return await this.inner.send({
+          ...options,
+          prompt: `System: ${commandResponse}`
+        });
+      }
+    }
+
     let modifiedOptions = options;
     
     // Run onBeforeSend hooks
@@ -48,6 +62,18 @@ export class PluginSession {
    * Send and wait with plugin pipeline
    */
   async sendAndWait(options: MessageOptions, timeout?: number): Promise<any> {
+    // Check for /plugins commands
+    if (this.pluginManager && options.prompt) {
+      const commandResponse = this.pluginManager.handleCommand(options.prompt);
+      if (commandResponse) {
+        // Return command response as message content
+        return {
+          content: commandResponse,
+          role: 'assistant'
+        };
+      }
+    }
+
     let modifiedOptions = options;
     
     // Run onBeforeSend hooks

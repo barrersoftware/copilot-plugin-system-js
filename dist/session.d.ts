@@ -4,6 +4,7 @@
  */
 import type { CopilotSession, MessageOptions } from '@github/copilot-sdk';
 import type { Plugin } from './types.js';
+import type { PluginManager } from './manager.js';
 /**
  * Session wrapper that runs plugins before/after operations
  */
@@ -11,8 +12,9 @@ export declare class PluginSession {
     private inner;
     private plugins;
     private debug;
+    private pluginManager?;
     private context;
-    constructor(inner: CopilotSession, plugins: Plugin[], debug?: boolean);
+    constructor(inner: CopilotSession, plugins: Plugin[], debug?: boolean, pluginManager?: PluginManager | undefined);
     get sessionId(): string;
     /**
      * Send message with plugin pipeline

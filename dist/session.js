@@ -9,11 +9,13 @@ export class PluginSession {
     inner;
     plugins;
     debug;
+    pluginManager;
     context;
-    constructor(inner, plugins, debug = false) {
+    constructor(inner, plugins, debug = false, pluginManager) {
         this.inner = inner;
         this.plugins = plugins;
         this.debug = debug;
+        this.pluginManager = pluginManager;
         this.context = {
             session: inner,
             data: new Map()
@@ -26,6 +28,17 @@ export class PluginSession {
      * Send message with plugin pipeline
      */
     async send(options) {
+        // Check for /plugins commands
+        if (this.pluginManager && options.prompt) {
+            const commandResponse = this.pluginManager.handleCommand(options.prompt);
+            if (commandResponse) {
+                // Intercept and send command response
+                return await this.inner.send({
+                    ...options,
+                    prompt: `System: ${commandResponse}`
+                });
+            }
+        }
         let modifiedOptions = options;
         // Run onBeforeSend hooks
         for (const plugin of this.plugins) {
@@ -41,6 +54,17 @@ export class PluginSession {
      * Send and wait with plugin pipeline
      */
     async sendAndWait(options, timeout) {
+        // Check for /plugins commands
+        if (this.pluginManager && options.prompt) {
+            const commandResponse = this.pluginManager.handleCommand(options.prompt);
+            if (commandResponse) {
+                // Return command response as message content
+                return {
+                    content: commandResponse,
+                    role: 'assistant'
+                };
+            }
+        }
         let modifiedOptions = options;
         // Run onBeforeSend hooks
         for (const plugin of this.plugins) {
