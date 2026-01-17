@@ -2,6 +2,10 @@
 
 A plugin system for the GitHub Copilot CLI SDK, enabling extensible and customizable AI assistant capabilities.
 
+> 🎉 **UPDATE**: We've submitted a complete plugin system to the official GitHub Copilot SDK!  
+> **See PR #42**: https://github.com/github/copilot-sdk/pull/42  
+> Read more in [UPSTREAM_PR.md](./UPSTREAM_PR.md)
+
 ## Overview
 
 This package wraps the official `@github/copilot` SDK and adds a plugin architecture, allowing developers to:
